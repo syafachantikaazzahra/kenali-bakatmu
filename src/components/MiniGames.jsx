@@ -192,25 +192,21 @@ export function TapBintangGame({ accent = "#D9A441", duration = 16, onDone = () 
       itu case-sensitive, beda dari komputer lokal (Windows/Mac).
    3. Kalau posisi kepala di atas badan geser/gak pas, atur
       angka di style "headBox" (top / left / width) di bawah.
-=========================================================== */
 /* ===========================================================
-  /* ===========================================================
-   /* ===========================================================
    GAME 2 — "Mini Games! (Tebak Gambar Hewan)"
-   Kalau kepala yang diklik BENAR -> badan asli tetap tampil,
-   muncul tulisan "bener!".
-   Kalau SALAH -> tampilkan foto gabungan lucu yang sudah jadi
-   (paus-penguin.jpeg / kucing-ikan.jpeg / ayam.jpeg), bukan
-   overlay manual, karena foto-foto ini editan halus.
+   Ini game jebakan lucu: 2 dari 3 hewan punya jawaban benar
+   yang NGGAK terduga (badan penguin -> jawabannya kepala paus,
+   badan ikan -> jawabannya kepala kucing). Set ayam jawabannya
+   normal/asli (kepala ayam), ga ada jebakan.
 =========================================================== */
 const HEWAN_SETS = [
   {
     id: "penguin",
     bodyImg: `${BASE}games/hewan/badan-penguin.jpeg`,
-    bodyLabel: "Penguin",
+    correctHeadId: "kepala-paus",
     resultImg: `${BASE}games/hewan/paus-penguin.jpeg`,
-    resultLabel: "eh malah jadi Paus!",
-    correctHeadId: "kepala-penguin",
+    correctCaption: "Yeay, bener! Ternyata bukan Penguin, tapi PAUS! 🐳 Ketipu ya?",
+    wrongCaption: "Yah, meleset! Kamu ketipu, kirain Penguin — padahal jawabannya Paus 😏",
     heads: [
       { id: "kepala-penguin", name: "Penguin", img: `${BASE}games/hewan/kepala-penguin.jpeg` },
       { id: "kepala-anjing", name: "Anjing", img: `${BASE}games/hewan/kepala-anjing.jpeg` },
@@ -220,10 +216,10 @@ const HEWAN_SETS = [
   {
     id: "ikan",
     bodyImg: `${BASE}games/hewan/badan-ikan.jpeg`,
-    bodyLabel: "Ikan",
+    correctHeadId: "kepala-kucing",
     resultImg: `${BASE}games/hewan/kucing-ikan.jpeg`,
-    resultLabel: "eh malah jadi Kucing!",
-    correctHeadId: "kepala-ikan",
+    correctCaption: "Yeay, bener! Ternyata bukan Ikan, tapi KUCING! 🐱 Ketipu ya?",
+    wrongCaption: "Yah, meleset! Kamu ketipu, kirain Ikan — padahal jawabannya Kucing 😏",
     heads: [
       { id: "kepala-ikan", name: "Ikan", img: `${BASE}games/hewan/kepala-ikan.jpeg` },
       { id: "kepala-ayam-2", name: "Ayam", img: `${BASE}games/hewan/kepala-ayam.jpeg` },
@@ -233,10 +229,10 @@ const HEWAN_SETS = [
   {
     id: "ayam",
     bodyImg: `${BASE}games/hewan/badan-ayam.jpeg`,
-    bodyLabel: "Anak Ayam",
-    resultImg: `${BASE}games/hewan/ayam.jpeg`,
-    resultLabel: "eh malah jadi Ayam Dewasa!",
     correctHeadId: "kepala-ayam",
+    resultImg: null, // ga ada jebakan buat yang ini, jawabannya emang asli Ayam
+    correctCaption: "Yeay, bener! Ini emang Ayam beneran, ga ada jebakan 🐔",
+    wrongCaption: "Yah, meleset! Ini sebenernya Ayam biasa, ga ada jebakan lho 😄",
     heads: [
       { id: "kepala-ayam", name: "Ayam", img: `${BASE}games/hewan/kepala-ayam.jpeg` },
       { id: "kepala-bebek", name: "Bebek", img: `${BASE}games/hewan/kepala-bebek.jpeg` },
@@ -255,6 +251,9 @@ export function TebakHewanGame({ accent = "#D9A441", duration = 30, onDone = () 
   const currentSet = HEWAN_SETS[setIndex];
   const isLastSet = setIndex === HEWAN_SETS.length - 1;
   const isCorrect = pickedHead?.id === currentSet.correctHeadId;
+  const displayImg = pickedHead
+    ? (isCorrect && currentSet.resultImg ? currentSet.resultImg : currentSet.bodyImg)
+    : currentSet.bodyImg;
 
   useEffect(() => {
     if (finished) return;
@@ -289,14 +288,14 @@ export function TebakHewanGame({ accent = "#D9A441", duration = 30, onDone = () 
       icon={<Shuffle size={13} />}
       eyebrow="Jeda santai"
       title="Mini Games! Tebak Gambar Hewan"
-      subtitle="Kira-kira kepala mana yang cocok buat badan hewan ini? Cuma buat seru-seruan, ga ngaruh ke skor tes kok 😄"
+      subtitle="Kira-kira kepala mana yang cocok buat badan hewan ini? Awas, ada jebakannya lho 😏"
       timeLeft={timeLeft}
       duration={duration}
       score={correctCount}
       scoreLabel="Tebakan benar"
       onSkip={() => setFinished(true)}
       finished={finished}
-      finishedTitle={correctCount === HEWAN_SETS.length ? "Ahli hewan sejati!" : "Seru kan? Jeda selesai!"}
+      finishedTitle={correctCount === HEWAN_SETS.length ? "Wih, ga kemakan jebakan sama sekali!" : "Seru kan? Jeda selesai!"}
       finishedNote={`Kamu berhasil menebak ${correctCount} dari ${HEWAN_SETS.length} hewan. Yuk lanjut.`}
       onContinue={() => onDone(correctCount)}
       continueLabel="Lanjut"
@@ -319,21 +318,13 @@ export function TebakHewanGame({ accent = "#D9A441", duration = 30, onDone = () 
         `}</style>
 
         <div className="mg-hewan-stage">
-          <img
-            key={pickedHead ? (isCorrect ? currentSet.bodyImg : currentSet.resultImg) : currentSet.bodyImg}
-            src={pickedHead ? (isCorrect ? currentSet.bodyImg : currentSet.resultImg) : currentSet.bodyImg}
-            alt={pickedHead ? (isCorrect ? currentSet.bodyLabel : currentSet.resultLabel) : currentSet.bodyLabel}
-          />
+          <img key={displayImg} src={displayImg} alt={currentSet.id} />
         </div>
 
         {pickedHead ? (
           <>
             <div className="mg-hewan-result">
-              {isCorrect ? (
-                <>Yeay, bener! Itu emang <b>{currentSet.bodyLabel}</b> 🎉</>
-              ) : (
-                <>Hihi, salah! <b>{currentSet.resultLabel}</b> 😂</>
-              )}
+              {isCorrect ? currentSet.correctCaption : currentSet.wrongCaption}
             </div>
             <div className="mg-hewan-next-row">
               <button className="mg-hewan-next-btn" onClick={handleNextAnimal}>
