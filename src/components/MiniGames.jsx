@@ -176,9 +176,18 @@ export function TapBintangGame({ accent = "#D9A441", duration = 16, onDone = () 
 
 /* ===========================================================
    GAME 2 — "Mini Games! (Tebak Gambar Hewan)"
-   Konsep: JEBAKAN. Badan Penguin -> jawaban benarnya Kepala
-   Paus. Badan Ikan -> jawaban benarnya Kepala Kucing. Badan
-   Ayam -> jawaban benarnya memang Kepala Ayam (ga ada jebakan).
+   Konsep: JEBAKAN.
+   - Badan Penguin -> jawaban benarnya Kepala Paus (bukan Penguin!)
+   - Badan Ikan    -> jawaban benarnya Kepala Kucing (bukan Ikan!)
+   - Badan Ayam    -> jawaban benarnya memang Kepala Ayam (ga ada jebakan)
+
+   Apapun kepala yang diklik SELALU ditempel (overlay) di atas
+   badan, biar keliatan jelas hasilnya — kecuali kalau BENAR untuk
+   set penguin/ikan, itu diganti foto premium yang lebih halus
+   (paus-penguin.jpeg / kucing-ikan.jpeg).
+
+   Kalau posisi kepala nempelnya geser/kepotong, atur angka di
+   "headBox" masing-masing set (top/left/width) di bawah ini.
 =========================================================== */
 const HEWAN_SETS = [
   {
@@ -186,6 +195,7 @@ const HEWAN_SETS = [
     bodyImg: `${BASE}games/hewan/badan-penguin.jpeg`,
     correctHeadId: "kepala-paus",
     resultImg: `${BASE}games/hewan/paus-penguin.jpeg`,
+    headBox: { top: "0%", left: "50%", width: "44%", transform: "translateX(-50%)" },
     correctCaption: "Yeay, bener! Ternyata bukan Penguin, tapi PAUS! 🐳 Ketipu ya?",
     wrongCaption: "Yah, meleset! Kamu ketipu, kirain Penguin — padahal jawabannya Paus 😏",
     heads: [
@@ -199,6 +209,7 @@ const HEWAN_SETS = [
     bodyImg: `${BASE}games/hewan/badan-ikan.jpeg`,
     correctHeadId: "kepala-kucing",
     resultImg: `${BASE}games/hewan/kucing-ikan.jpeg`,
+    headBox: { top: "22%", left: "6%", width: "36%" },
     correctCaption: "Yeay, bener! Ternyata bukan Ikan, tapi KUCING! 🐱 Ketipu ya?",
     wrongCaption: "Yah, meleset! Kamu ketipu, kirain Ikan — padahal jawabannya Kucing 😏",
     heads: [
@@ -212,6 +223,7 @@ const HEWAN_SETS = [
     bodyImg: `${BASE}games/hewan/badan-ayam.jpeg`,
     correctHeadId: "kepala-ayam",
     resultImg: null,
+    headBox: { top: "0%", left: "50%", width: "38%", transform: "translateX(-50%)" },
     correctCaption: "Yeay, bener! Ini emang Ayam beneran, ga ada jebakan 🐔",
     wrongCaption: "Yah, meleset! Ini sebenernya Ayam biasa, ga ada jebakan lho 😄",
     heads: [
@@ -232,9 +244,7 @@ export function TebakHewanGame({ accent = "#D9A441", duration = 30, onDone = () 
   const currentSet = HEWAN_SETS[setIndex];
   const isLastSet = setIndex === HEWAN_SETS.length - 1;
   const isCorrect = pickedHead?.id === currentSet.correctHeadId;
-  const displayImg = pickedHead
-    ? (isCorrect && currentSet.resultImg ? currentSet.resultImg : currentSet.bodyImg)
-    : currentSet.bodyImg;
+  const useResultPhoto = pickedHead && isCorrect && currentSet.resultImg;
 
   useEffect(() => {
     if (finished) return;
@@ -284,8 +294,11 @@ export function TebakHewanGame({ accent = "#D9A441", duration = 30, onDone = () 
       <div className="mg-hewan">
         <style>{`
           .mg-hewan-stage { position:relative; height:230px; border-radius:18px; border:1px dashed rgba(244,238,224,.18); background: rgba(244,238,224,.03); overflow:hidden; display:flex; align-items:center; justify-content:center; }
-          .mg-hewan-stage img { max-height:100%; max-width:100%; object-fit:contain; animation: mgHeadPop .2s ease; }
-          @keyframes mgHeadPop { from{ opacity:0; transform: scale(.9); } to{ opacity:1; transform: scale(1); } }
+          .mg-hewan-stage img.mg-hewan-photo { max-height:100%; max-width:100%; object-fit:contain; animation: mgHeadPop .2s ease; }
+          .mg-hewan-body-wrap { position:relative; width:100%; height:100%; }
+          .mg-hewan-body { position:absolute; inset:0; width:100%; height:100%; object-fit:contain; }
+          .mg-hewan-head-overlay { position:absolute; object-fit:contain; animation: mgHeadPop .2s ease; }
+          @keyframes mgHeadPop { from{ opacity:0; transform: scale(.88); } to{ opacity:1; transform: scale(1); } }
           .mg-hewan-result { text-align:center; margin-top:10px; font-size:13px; color:#C9C2AE; }
           .mg-hewan-result b { color:#F4EEE0; }
           .mg-hewan-options { display:flex; gap:10px; margin-top:12px; }
@@ -299,7 +312,22 @@ export function TebakHewanGame({ accent = "#D9A441", duration = 30, onDone = () 
         `}</style>
 
         <div className="mg-hewan-stage">
-          <img key={displayImg} src={displayImg} alt={currentSet.id} />
+          {useResultPhoto ? (
+            <img className="mg-hewan-photo" key={currentSet.resultImg} src={currentSet.resultImg} alt={currentSet.correctCaption} />
+          ) : (
+            <div className="mg-hewan-body-wrap">
+              <img className="mg-hewan-body" src={currentSet.bodyImg} alt={currentSet.id} />
+              {pickedHead && (
+                <img
+                  className="mg-hewan-head-overlay"
+                  style={currentSet.headBox}
+                  key={pickedHead.id}
+                  src={pickedHead.img}
+                  alt={pickedHead.name}
+                />
+              )}
+            </div>
+          )}
         </div>
 
         {pickedHead ? (
