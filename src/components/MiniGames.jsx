@@ -181,13 +181,19 @@ export function TapBintangGame({ accent = "#D9A441", duration = 16, onDone = () 
    - Badan Ikan    -> jawaban benarnya Kepala Kucing (bukan Ikan!)
    - Badan Ayam    -> jawaban benarnya memang Kepala Ayam (ga ada jebakan)
 
-   Apapun kepala yang diklik SELALU ditempel (overlay) di atas
-   badan, biar keliatan jelas hasilnya — kecuali kalau BENAR untuk
-   set penguin/ikan, itu diganti foto premium yang lebih halus
-   (paus-penguin.jpeg / kucing-ikan.jpeg).
+   PENTING: kalau sebuah set punya `resultImg` (penguin & ikan),
+   gambar hasil itu SELALU yang ditampilkan begitu user memilih
+   kepala apapun — benar ataupun salah. Ini disengaja (bukan bug)
+   biar user selalu "ketipu" liat hasil aslinya (mis. paus-penguin)
+   walau mereka klik kepala penguin/anjing. Cuma caption di bawah
+   foto yang berubah (bener vs ketipu), fotonya tetap sama.
 
-   Kalau posisi kepala nempelnya geser/kepotong, atur angka di
-   "headBox" masing-masing set (top/left/width) di bawah ini.
+   Untuk set ayam yang ga punya `resultImg`, tetap pakai overlay
+   kepala di atas badan seperti biasa (karena tidak ada jebakan).
+
+   Kalau posisi kepala nempelnya geser/kepotong (dipakai cuma pas
+   ga ada resultImg, mis. ayam), atur angka di "headBox" masing-
+   masing set (top/left/width) di bawah ini.
 =========================================================== */
 const HEWAN_SETS = [
   {
@@ -244,7 +250,9 @@ export function TebakHewanGame({ accent = "#D9A441", duration = 30, onDone = () 
   const currentSet = HEWAN_SETS[setIndex];
   const isLastSet = setIndex === HEWAN_SETS.length - 1;
   const isCorrect = pickedHead?.id === currentSet.correctHeadId;
-  const useResultPhoto = pickedHead && isCorrect && currentSet.resultImg;
+  // Selalu tampilkan foto hasil (kalau set-nya punya resultImg),
+  // gak peduli user milih kepala benar atau salah — ini jebakannya.
+  const useResultPhoto = pickedHead && currentSet.resultImg;
 
   useEffect(() => {
     if (finished) return;
