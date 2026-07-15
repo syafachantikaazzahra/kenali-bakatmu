@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { Star, Zap, Shuffle, ArrowRight, SkipForward, PartyPopper } from "lucide-react";
+const BASE = import.meta.env.BASE_URL;
 
 /* ===========================================================
    MiniGames.jsx — jeda santai 15–20 detik di antara sesi tes.
@@ -81,9 +82,6 @@ function GameFrame({ accent, icon, eyebrow, title, subtitle, timeLeft, duration,
 
 /* ===========================================================
    GAME 1 — "Tangkap Bintang Berkilau"
-   Dipakai di tengah Sesi 2. Bintang muncul acak & sebentar,
-   tinggal di-tap sebanyak mungkin. Murni untuk having-fun,
-   tidak memengaruhi skor tes.
 =========================================================== */
 export function TapBintangGame({ accent = "#D9A441", duration = 16, onDone = () => {} }) {
   const [timeLeft, setTimeLeft] = useState(duration);
@@ -182,67 +180,68 @@ export function TapBintangGame({ accent = "#D9A441", duration = 16, onDone = () 
 
 /* ===========================================================
    GAME 2 — "Mini Games! (Tebak Gambar Hewan)"
-   Badan hewannya tetap, tapi kepalanya suka ketuker sendiri
-   tiap di-klik — murni buat lucu-lucuan, TIDAK ADA benar/salah
-   dan tidak memengaruhi hasil tes sama sekali.
+   Badan hewan tetap, kepalanya suka ketuker sendiri tiap
+   di-klik salah satu opsi kepala — murni lucu-lucuan,
+   TIDAK ADA benar/salah, tidak memengaruhi hasil tes.
 
    CARA GANTI GAMBAR:
    1. Taruh file .jpeg badan & kepala hewan di folder:
       public/games/hewan/
-   2. Nama file HARUS SAMA PERSIS dengan yang tertulis di
-      HEWAN_SETS di bawah ini.
-   3. Kalau posisi kepala di atas badan kelihatan geser/gak pas,
-      tinggal atur angka "headStyle" (top / left / width)
-      punya masing-masing set sampai pas.
+   2. Nama file HARUS SAMA PERSIS (termasuk huruf besar/kecil)
+      dengan yang tertulis di HEWAN_SETS di bawah — GitHub Pages
+      itu case-sensitive, beda dari komputer lokal (Windows/Mac).
+   3. Kalau posisi kepala di atas badan geser/gak pas, atur
+      angka di style "headBox" (top / left / width) di bawah.
 =========================================================== */
-const HEWAN_SETS = [
-  {
-    id: "penguin",
-    bodyImg: "/games/hewan/badan-penguin.jpeg",
-    bodyLabel: "Penguin",
-    resultImg: "/games/hewan/paus-penguin.jpeg",
-    resultLabel: "Badan Penguin + Kepala Paus",
-    heads: [
-      { id: "kepala-penguin", name: "Penguin", img: "/games/hewan/kepala-penguin.jpeg" },
-      { id: "kepala-anjing", name: "Anjing", img: "/games/hewan/kepala-anjing.jpeg" },
-      { id: "kepala-paus", name: "Paus", img: "/games/hewan/kepala-paus.jpeg" },
-    ],
-  },
-  {
-    id: "ikan",
-    bodyImg: "/games/hewan/badan-ikan.jpeg",
-    bodyLabel: "Ikan",
-    resultImg: "/games/hewan/kucing-ikan.jpeg",
-    resultLabel: "Badan Ikan + Kepala Kucing",
-    heads: [
-      { id: "kepala-ikan", name: "Ikan", img: "/games/hewan/kepala-ikan.jpeg" },
-      { id: "kepala-ayam-2", name: "Ayam", img: "/games/hewan/kepala-ayam.jpeg" },
-      { id: "kepala-kucing", name: "Kucing", img: "/games/hewan/kepala-kucing.jpeg" },
-    ],
-  },
-  {
-    id: "ayam",
-    bodyImg: "/games/hewan/badan-ayam.jpeg",
-    bodyLabel: "Ayam",
-    resultImg: "/games/hewan/ayam.jpeg",
-    resultLabel: "Badan Ayam + Kepala Ayam",
-    heads: [
-      { id: "kepala-ayam", name: "Ayam", img: "/games/hewan/kepala-ayam.jpeg" },
-      { id: "kepala-bebek", name: "Bebek", img: "/games/hewan/kepala-bebek.jpeg" },
-      { id: "kepala-kambing", name: "Kambing", img: "/games/hewan/kepala-kambing.jpeg" },
-    ],
-  },
-];
-
 export function TebakHewanGame({ accent = "#D9A441", duration = 30, onDone = () => {} }) {
+  const HEWAN_SETS = [
+    {
+      id: "penguin",
+      bodyImg: `${BASE}games/hewan/badan-penguin.jpeg`,
+      bodyLabel: "Penguin",
+      resultImg: `${BASE}games/hewan/paus-penguin.jpeg`,
+      resultLabel: "Badan Penguin + Kepala Paus",
+      heads: [
+        { id: "kepala-penguin", name: "Penguin", img: `${BASE}games/hewan/kepala-penguin.jpeg` },
+        { id: "kepala-anjing", name: "Anjing", img: `${BASE}games/hewan/kepala-anjing.jpeg` },
+        { id: "kepala-paus", name: "Paus", img: `${BASE}games/hewan/kepala-paus.jpeg` },
+      ],
+    },
+    {
+      id: "ikan",
+      bodyImg: `${BASE}games/hewan/badan-ikan.jpeg`,
+      bodyLabel: "Ikan",
+      resultImg: `${BASE}games/hewan/kucing-ikan.jpeg`,
+      resultLabel: "Badan Ikan + Kepala Kucing",
+      heads: [
+        { id: "kepala-ikan", name: "Ikan", img: `${BASE}games/hewan/kepala-ikan.jpeg` },
+        { id: "kepala-ayam-2", name: "Ayam", img: `${BASE}games/hewan/kepala-ayam.jpeg` },
+        { id: "kepala-kucing", name: "Kucing", img: `${BASE}games/hewan/kepala-kucing.jpeg` },
+      ],
+    },
+    {
+      id: "ayam",
+      bodyImg: `${BASE}games/hewan/badan-ayam.jpeg`,
+      bodyLabel: "Ayam",
+      resultImg: `${BASE}games/hewan/ayam.jpeg`,
+      resultLabel: "Badan Ayam + Kepala Ayam",
+      heads: [
+        { id: "kepala-ayam", name: "Ayam", img: `${BASE}games/hewan/kepala-ayam.jpeg` },
+        { id: "kepala-bebek", name: "Bebek", img: `${BASE}games/hewan/kepala-bebek.jpeg` },
+        { id: "kepala-kambing", name: "Kambing", img: `${BASE}games/hewan/kepala-kambing.jpeg` },
+      ],
+    },
+  ];
+
   const [timeLeft, setTimeLeft] = useState(duration);
-  const [guessCount, setGuessCount] = useState(0);
+  const [score, setScore] = useState(0);
   const [finished, setFinished] = useState(false);
   const [setIndex, setSetIndex] = useState(0);
-  const [revealed, setRevealed] = useState(false);
+  const [headIndex, setHeadIndex] = useState(0);
+  const timerRef = useRef(null);
 
   const currentSet = HEWAN_SETS[setIndex];
-  const isLastSet = setIndex === HEWAN_SETS.length - 1;
+  const currentHead = currentSet.heads[headIndex];
 
   useEffect(() => {
     if (finished) return;
@@ -250,25 +249,38 @@ export function TebakHewanGame({ accent = "#D9A441", duration = 30, onDone = () 
       setFinished(true);
       return;
     }
-    const t = setTimeout(() => setTimeLeft((s) => s - 1), 1000);
-    return () => clearTimeout(t);
+    timerRef.current = setTimeout(() => setTimeLeft((s) => s - 1), 1000);
+    return () => clearTimeout(timerRef.current);
   }, [timeLeft, finished]);
 
-  // apapun kepala yang diklik, yang muncul selalu foto hasil gabungan
-  // yang sama — itu memang sengaja, itulah lucunya :)
-  const handlePick = () => {
-    if (finished || revealed) return;
-    setRevealed(true);
-    setGuessCount((c) => c + 1);
+  // klik salah satu opsi kepala -> kepala di badan ganti ACAK (bukan yang diklik), biar lucu
+  const handlePickHead = () => {
+    setScore((s) => s + 1);
+    let nextHead;
+    do {
+      nextHead = Math.floor(Math.random() * currentSet.heads.length);
+    } while (nextHead === headIndex && currentSet.heads.length > 1);
+    setHeadIndex(nextHead);
+
+    // sesekali loncat ke set hewan lain juga, biar makin variatif
+    if (Math.random() < 0.3) {
+      let nextSet;
+      do {
+        nextSet = Math.floor(Math.random() * HEWAN_SETS.length);
+      } while (nextSet === setIndex && HEWAN_SETS.length > 1);
+      setSetIndex(nextSet);
+      setHeadIndex(0);
+    }
   };
 
-  const handleNextAnimal = () => {
-    if (isLastSet) {
-      setFinished(true);
-      return;
-    }
-    setSetIndex((i) => i + 1);
-    setRevealed(false);
+  const handleSkip = () => {
+    clearTimeout(timerRef.current);
+    setFinished(true);
+  };
+
+  const imgFallback = (label) => (e) => {
+    console.warn(`Gambar gagal dimuat: ${label} ->`, e.target.src);
+    e.target.style.opacity = 0.15;
   };
 
   return (
@@ -276,63 +288,55 @@ export function TebakHewanGame({ accent = "#D9A441", duration = 30, onDone = () 
       accent={accent}
       icon={<Shuffle size={13} />}
       eyebrow="Jeda santai"
-      title="Mini Games!"
-      subtitle="Klik salah satu kepala di bawah ini"
+      title="Mini Games! Tebak Gambar Hewan"
+      subtitle="Klik salah satu kepala di bawah, kepalanya bakal ketuker sendiri di badan hewan. Cuma buat seru-seruan, ga ada benar/salah 😄"
       timeLeft={timeLeft}
       duration={duration}
-      score={guessCount}
-      scoreLabel="Hewan ditebak"
-      onSkip={() => setFinished(true)}
+      score={score}
+      scoreLabel="Kepala ditukar"
+      onSkip={handleSkip}
       finished={finished}
-      finishedTitle={guessCount >= HEWAN_SETS.length ? "Kreator hewan hybrid sejati!" : "Seru kan? Jeda selesai!"}
-      finishedNote={`Kamu udah nyoba ${guessCount} dari ${HEWAN_SETS.length} hewan. Yuk lanjut.`}
-      onContinue={() => onDone(guessCount)}
-      continueLabel="Lanjut"
+      finishedTitle="Asik, jeda selesai!"
+      finishedNote={`Kamu menukar kepala ${score} kali. Yuk lanjut ke soal berikutnya.`}
+      onContinue={() => onDone(score)}
+      continueLabel="Lanjut soal berikutnya"
     >
-      <div className="mg-hewan">
+      <div className="mg-hewan-wrap">
         <style>{`
-          .mg-hewan-stage { position:relative; height:230px; border-radius:18px; border:1px dashed rgba(244,238,224,.18); background: rgba(244,238,224,.03); overflow:hidden; display:flex; align-items:center; justify-content:center; }
-          .mg-hewan-stage img { max-height:100%; max-width:100%; object-fit:contain; animation: mgHeadPop .25s ease; }
-          @keyframes mgHeadPop { from{ opacity:0; transform: scale(.92); } to{ opacity:1; transform: scale(1); } }
-          .mg-hewan-result { text-align:center; margin-top:10px; font-size:13px; color:#C9C2AE; }
-          .mg-hewan-result b { color:#F4EEE0; }
-          .mg-hewan-options { display:flex; gap:10px; margin-top:12px; }
-          .mg-hewan-opt { flex:1; display:flex; align-items:center; justify-content:center; background: rgba(244,238,224,.04); border:1px solid rgba(244,238,224,.14); border-radius:14px; padding:10px; cursor:pointer; transition: transform .12s ease, border-color .2s ease; }
-          .mg-hewan-opt:hover { transform: translateY(-2px); border-color: rgba(244,238,224,.35); }
-          .mg-hewan-opt img { width:100%; height:56px; object-fit:contain; }
-          .mg-hewan-next-row { display:flex; justify-content:center; margin-top:16px; }
-          .mg-hewan-next-btn { display:inline-flex; align-items:center; gap:7px; background:transparent; border:1px solid var(--mg-accent); color:var(--mg-accent); font-size:13px; font-weight:600; padding:9px 18px; border-radius:999px; cursor:pointer; transition: background .2s ease; }
-          .mg-hewan-next-btn:hover { background: color-mix(in srgb, var(--mg-accent) 16%, transparent); }
+          .mg-hewan-wrap { display:flex; flex-direction:column; align-items:center; gap:18px; }
+          .mg-hewan-stage { position:relative; width:220px; height:220px; border-radius:18px; border:1px dashed rgba(244,238,224,.18); background: rgba(244,238,224,.03); overflow:hidden; }
+          .mg-hewan-body { position:absolute; inset:0; width:100%; height:100%; object-fit:contain; }
+          .mg-hewan-head { position:absolute; top:8%; left:50%; width:46%; transform:translateX(-50%); object-fit:contain; transition: opacity .2s ease; }
+          .mg-hewan-options { display:flex; gap:10px; flex-wrap:wrap; justify-content:center; }
+          .mg-hewan-opt { display:flex; flex-direction:column; align-items:center; gap:6px; background:transparent; border:1px solid rgba(244,238,224,.18); border-radius:12px; padding:8px; cursor:pointer; transition: border-color .2s, transform .15s; }
+          .mg-hewan-opt:hover { border-color: var(--mg-accent); transform: translateY(-2px); }
+          .mg-hewan-opt img { width:48px; height:48px; object-fit:contain; }
+          .mg-hewan-opt span { font-size:11px; color:#C9C2AE; }
         `}</style>
 
         <div className="mg-hewan-stage">
           <img
-            key={revealed ? currentSet.resultImg : currentSet.bodyImg}
-            src={revealed ? currentSet.resultImg : currentSet.bodyImg}
-            alt={revealed ? currentSet.resultLabel : currentSet.bodyLabel}
+            className="mg-hewan-body"
+            src={currentSet.bodyImg}
+            alt={currentSet.bodyLabel}
+            onError={imgFallback(`badan ${currentSet.bodyLabel}`)}
+          />
+          <img
+            className="mg-hewan-head"
+            src={currentHead.img}
+            alt={currentHead.name}
+            onError={imgFallback(`kepala ${currentHead.name}`)}
           />
         </div>
 
-        {revealed ? (
-          <>
-            <div className="mg-hewan-result">
-              Taraa! <b>{currentSet.resultLabel}</b> 🎉
-            </div>
-            <div className="mg-hewan-next-row">
-              <button className="mg-hewan-next-btn" onClick={handleNextAnimal}>
-                {isLastSet ? "Selesai, lanjut →" : "Tebak hewan selanjutnya →"}
-              </button>
-            </div>
-          </>
-        ) : (
-          <div className="mg-hewan-options">
-            {currentSet.heads.map((h) => (
-              <button key={h.id} className="mg-hewan-opt" onClick={handlePick} aria-label={`Pilih kepala ${h.name}`}>
-                <img src={h.img} alt={h.name} />
-              </button>
-            ))}
-          </div>
-        )}
+        <div className="mg-hewan-options">
+          {currentSet.heads.map((h) => (
+            <button key={h.id} className="mg-hewan-opt" onClick={handlePickHead}>
+              <img src={h.img} alt={h.name} onError={imgFallback(`opsi ${h.name}`)} />
+              <span>{h.name}</span>
+            </button>
+          ))}
+        </div>
       </div>
     </GameFrame>
   );
