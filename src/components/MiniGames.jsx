@@ -194,28 +194,24 @@ export function TapBintangGame({ accent = "#D9A441", duration = 16, onDone = () 
       angka di style "headBox" (top / left / width) di bawah.
 =========================================================== */
 /* ===========================================================
+  /* ===========================================================
    GAME 2 — "Mini Games! (Tebak Gambar Hewan)"
-   Peserta menebak kepala mana yang cocok untuk badan hewan
-   yang ditampilkan. Kalau benar -> muncul hasil yang pas.
-   Kalau salah -> muncul gabungan lucu (hybrid). Ga ada nilai
-   "gagal" di tes, cuma buat seru-seruan santai.
-
-   CARA GANTI GAMBAR:
-   1. Taruh file .jpeg badan & kepala hewan di folder:
-      public/games/hewan/
-   2. Nama file HARUS SAMA PERSIS (termasuk huruf besar/kecil)
-      dengan yang tertulis di HEWAN_SETS di bawah ini.
-   3. correctHeadId HARUS SAMA dengan salah satu "id" di array
-      heads pada set yang sama — itu yang dianggap "jawaban benar".
+   Peserta menebak kepala mana yang cocok untuk badan hewan.
+   Kepala yang DIKLIK selalu ditempel langsung di atas badan
+   (overlay), jadi hasilnya selalu konsisten sama pilihan —
+   ga ada lagi mismatch kayak fish+kepala kucing yang ga nyambung
+   sama yang diklik. Kalau benar -> muncul tulisan "bener".
+   Kalau salah -> tetap ketempel kepala yang salah itu (lucu),
+   tapi headnya emang beneran yang diklik.
 =========================================================== */
 const HEWAN_SETS = [
   {
     id: "penguin",
     bodyImg: `${BASE}games/hewan/badan-penguin.jpeg`,
     bodyLabel: "Penguin",
-    resultImg: `${BASE}games/hewan/paus-penguin.jpeg`,
-    resultLabel: "Badan Penguin + Kepala Paus",
     correctHeadId: "kepala-penguin",
+    // atur posisi kepala di atas badan penguin ini
+    headBox: { top: "6%", left: "50%", width: "42%", transform: "translateX(-50%)" },
     heads: [
       { id: "kepala-penguin", name: "Penguin", img: `${BASE}games/hewan/kepala-penguin.jpeg` },
       { id: "kepala-anjing", name: "Anjing", img: `${BASE}games/hewan/kepala-anjing.jpeg` },
@@ -226,9 +222,9 @@ const HEWAN_SETS = [
     id: "ikan",
     bodyImg: `${BASE}games/hewan/badan-ikan.jpeg`,
     bodyLabel: "Ikan",
-    resultImg: `${BASE}games/hewan/kucing-ikan.jpeg`,
-    resultLabel: "Badan Ikan + Kepala Kucing",
     correctHeadId: "kepala-ikan",
+    // ikan biasanya horizontal, kepala ada di kiri/kanan badan — sesuaikan
+    headBox: { top: "30%", left: "8%", width: "34%" },
     heads: [
       { id: "kepala-ikan", name: "Ikan", img: `${BASE}games/hewan/kepala-ikan.jpeg` },
       { id: "kepala-ayam-2", name: "Ayam", img: `${BASE}games/hewan/kepala-ayam.jpeg` },
@@ -239,9 +235,8 @@ const HEWAN_SETS = [
     id: "ayam",
     bodyImg: `${BASE}games/hewan/badan-ayam.jpeg`,
     bodyLabel: "Ayam",
-    resultImg: `${BASE}games/hewan/ayam.jpeg`,
-    resultLabel: "Badan Ayam + Kepala Ayam",
     correctHeadId: "kepala-ayam",
+    headBox: { top: "4%", left: "50%", width: "36%", transform: "translateX(-50%)" },
     heads: [
       { id: "kepala-ayam", name: "Ayam", img: `${BASE}games/hewan/kepala-ayam.jpeg` },
       { id: "kepala-bebek", name: "Bebek", img: `${BASE}games/hewan/kepala-bebek.jpeg` },
@@ -255,11 +250,11 @@ export function TebakHewanGame({ accent = "#D9A441", duration = 30, onDone = () 
   const [correctCount, setCorrectCount] = useState(0);
   const [finished, setFinished] = useState(false);
   const [setIndex, setSetIndex] = useState(0);
-  const [pickedHeadId, setPickedHeadId] = useState(null); // null = belum milih
+  const [pickedHead, setPickedHead] = useState(null); // null = belum milih, else object head
 
   const currentSet = HEWAN_SETS[setIndex];
   const isLastSet = setIndex === HEWAN_SETS.length - 1;
-  const isCorrect = pickedHeadId === currentSet.correctHeadId;
+  const isCorrect = pickedHead?.id === currentSet.correctHeadId;
 
   useEffect(() => {
     if (finished) return;
@@ -271,10 +266,10 @@ export function TebakHewanGame({ accent = "#D9A441", duration = 30, onDone = () 
     return () => clearTimeout(t);
   }, [timeLeft, finished]);
 
-  const handlePick = (headId) => {
-    if (finished || pickedHeadId) return;
-    setPickedHeadId(headId);
-    if (headId === currentSet.correctHeadId) {
+  const handlePick = (head) => {
+    if (finished || pickedHead) return;
+    setPickedHead(head);
+    if (head.id === currentSet.correctHeadId) {
       setCorrectCount((c) => c + 1);
     }
   };
@@ -285,7 +280,7 @@ export function TebakHewanGame({ accent = "#D9A441", duration = 30, onDone = () 
       return;
     }
     setSetIndex((i) => i + 1);
-    setPickedHeadId(null);
+    setPickedHead(null);
   };
 
   return (
@@ -303,60 +298,6 @@ export function TebakHewanGame({ accent = "#D9A441", duration = 30, onDone = () 
       finished={finished}
       finishedTitle={correctCount === HEWAN_SETS.length ? "Ahli hewan sejati!" : "Seru kan? Jeda selesai!"}
       finishedNote={`Kamu berhasil menebak ${correctCount} dari ${HEWAN_SETS.length} hewan. Yuk lanjut.`}
-      onContinue={() => onDone(correctCount)}
-      continueLabel="Lanjut"
-    >
-      <div className="mg-hewan">
-        <style>{`
-          .mg-hewan-stage { position:relative; height:230px; border-radius:18px; border:1px dashed rgba(244,238,224,.18); background: rgba(244,238,224,.03); overflow:hidden; display:flex; align-items:center; justify-content:center; }
-          .mg-hewan-stage img { max-height:100%; max-width:100%; object-fit:contain; animation: mgHeadPop .25s ease; }
-          @keyframes mgHeadPop { from{ opacity:0; transform: scale(.92); } to{ opacity:1; transform: scale(1); } }
-          .mg-hewan-result { text-align:center; margin-top:10px; font-size:13px; color:#C9C2AE; }
-          .mg-hewan-result b { color:#F4EEE0; }
-          .mg-hewan-options { display:flex; gap:10px; margin-top:12px; }
-          .mg-hewan-opt { flex:1; display:flex; flex-direction:column; align-items:center; gap:6px; background: rgba(244,238,224,.04); border:1px solid rgba(244,238,224,.14); border-radius:14px; padding:10px; cursor:pointer; transition: transform .12s ease, border-color .2s ease; }
-          .mg-hewan-opt:hover { transform: translateY(-2px); border-color: rgba(244,238,224,.35); }
-          .mg-hewan-opt img { width:100%; height:56px; object-fit:contain; }
-          .mg-hewan-opt span { font-size:11px; color:#C9C2AE; }
-          .mg-hewan-next-row { display:flex; justify-content:center; margin-top:16px; }
-          .mg-hewan-next-btn { display:inline-flex; align-items:center; gap:7px; background:transparent; border:1px solid var(--mg-accent); color:var(--mg-accent); font-size:13px; font-weight:600; padding:9px 18px; border-radius:999px; cursor:pointer; transition: background .2s ease; }
-          .mg-hewan-next-btn:hover { background: color-mix(in srgb, var(--mg-accent) 16%, transparent); }
-        `}</style>
-
-        <div className="mg-hewan-stage">
-          <img
-            key={pickedHeadId ? (isCorrect ? currentSet.bodyImg : currentSet.resultImg) : currentSet.bodyImg}
-            src={pickedHeadId ? (isCorrect ? currentSet.bodyImg : currentSet.resultImg) : currentSet.bodyImg}
-            alt={pickedHeadId ? (isCorrect ? currentSet.bodyLabel : currentSet.resultLabel) : currentSet.bodyLabel}
-          />
-        </div>
-
-        {pickedHeadId ? (
-          <>
-            <div className="mg-hewan-result">
-              {isCorrect ? (
-                <>Yeay, bener! Itu emang <b>{currentSet.bodyLabel}</b> 🎉</>
-              ) : (
-                <>Hihi, salah! Tapi jadinya lucu: <b>{currentSet.resultLabel}</b> 😂</>
-              )}
-            </div>
-            <div className="mg-hewan-next-row">
-              <button className="mg-hewan-next-btn" onClick={handleNextAnimal}>
-                {isLastSet ? "Selesai, lanjut →" : "Tebak hewan selanjutnya →"}
-              </button>
-            </div>
-          </>
-        ) : (
-          <div className="mg-hewan-options">
-            {currentSet.heads.map((h) => (
-              <button key={h.id} className="mg-hewan-opt" onClick={() => handlePick(h.id)} aria-label={`Pilih kepala ${h.name}`}>
-                <img src={h.img} alt={h.name} />
-                <span>{h.name}</span>
-              </button>
-            ))}
-          </div>
-        )}
-      </div>
-    </GameFrame>
+      onContinue={() =>
   );
 }
