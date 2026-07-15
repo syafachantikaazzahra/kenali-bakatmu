@@ -228,7 +228,7 @@ const HEWAN_SETS = [
     id: "ayam",
     bodyImg: `${BASE}games/hewan/badan-ayam.jpeg`,
     correctHeadId: "kepala-ayam",
-    resultImg: null,
+    resultImg: `${BASE}games/hewan/ayam.jpeg`,
     headBox: { top: "0%", left: "50%", width: "38%", transform: "translateX(-50%)" },
     correctCaption: "Yeay, bener! Ini emang Ayam beneran, ga ada jebakan 🐔",
     wrongCaption: "Yah, meleset! Ini sebenernya Ayam biasa, ga ada jebakan lho 😄",
