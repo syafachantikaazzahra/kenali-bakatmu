@@ -203,7 +203,7 @@ const HEWAN_SETS = [
   {
     id: "penguin",
     bodyImg: `${BASE}games/hewan/badan-penguin.jpeg`,
-    correctHeadId: "kepala-paus",
+    correctHeadId: "paus-penguin",
     resultImg: `${BASE}games/hewan/paus-penguin.jpeg`,
     correctCaption: "Yeay, bener! Ternyata bukan Penguin, tapi PAUS! 🐳 Ketipu ya?",
     wrongCaption: "Yah, meleset! Kamu ketipu, kirain Penguin — padahal jawabannya Paus 😏",
@@ -230,7 +230,7 @@ const HEWAN_SETS = [
     id: "ayam",
     bodyImg: `${BASE}games/hewan/badan-ayam.jpeg`,
     correctHeadId: "kepala-ayam",
-    resultImg: null, // ga ada jebakan buat yang ini, jawabannya emang asli Ayam
+    resultImg: resultImg: `${BASE}games/ayam.jpeg`, // ga ada jebakan buat yang ini, jawabannya emang asli Ayam
     correctCaption: "Yeay, bener! Ini emang Ayam beneran, ga ada jebakan 🐔",
     wrongCaption: "Yah, meleset! Ini sebenernya Ayam biasa, ga ada jebakan lho 😄",
     heads: [
